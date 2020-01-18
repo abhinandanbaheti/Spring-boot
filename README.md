@@ -1,5 +1,4 @@
-# Spring-boot
-Spring boot service
+# Spring-boot service
 Build an Image
 mvn package docker:build
 
