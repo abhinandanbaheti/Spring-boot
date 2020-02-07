@@ -1,6 +1,6 @@
 package com.exp.service.dtos;
 
-public class TestDTO {
+public class User {
     private String id;
     private String name;
 
