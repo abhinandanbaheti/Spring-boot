@@ -2,19 +2,25 @@ package com.exp.controllers;
 
 import com.exp.common.AuthZAccess;
 import com.exp.common.LogAccess;
+import com.exp.exceptions.TestException;
 import com.exp.service.UserService;
 import com.exp.service.dtos.User;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+
+import java.util.Arrays;
+
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 public class UserController {
@@ -22,7 +28,11 @@ public class UserController {
     @Autowired
     UserService testService;
 
-    @Value("Hello World")
+    @Autowired
+    RestTemplate restTemplate;
+
+    @Value("${spring.application.name}")
+    //@Value("Hello World")
     private String name;
 
     @RequestMapping(value = "/")
@@ -55,6 +65,25 @@ public class UserController {
         return new ResponseEntity<>("TestObj is created successfully", HttpStatus.CREATED);
     }
 
+    @RequestMapping(value = "/exception/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Object> getException(@PathVariable("id") String id) {
+        throw new TestException();
+    }
+
+    @RequestMapping(value = "/template/users")
+    public String getUsersList() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        HttpEntity<String> entity = new HttpEntity<String>(headers);
+        return restTemplate.exchange("http://localhost:9090/users", HttpMethod.GET, entity, String.class).getBody();
+    }
+
+//    @GetMapping(value = "/test1")
+//    public void getTest1(HttpServletRequest request, HttpServletResponse response) {
+//       System.out.println("header: auth param - " + request.getHeader("auth"));
+//        response.setStatus(307);
+//        response.setHeader(HttpHeaders.LOCATION, "test");
+//    }
 //    @RequestMapping(value = "/aop", method = RequestMethod.GET)
 //    @AuthZAccess(accessBy = false)
 //    public ResponseEntity<Object> getSomeResult(HttpServletRequest request) {
