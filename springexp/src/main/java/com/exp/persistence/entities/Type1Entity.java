@@ -1,8 +1,9 @@
 package com.exp.persistence.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "type1")
@@ -13,16 +14,32 @@ public class Type1Entity extends BaseEntity {
     String entityName;
     String entityType;
 
+
+    @ElementCollection
+    @CollectionTable(name = "user_phone_numbers", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "phone_number")
+    private Set<String> phoneNumbers = new HashSet<>();
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "user_addresses", joinColumns = @JoinColumn(name = "user_id"))
+    @AttributeOverrides({
+            @AttributeOverride(name = "addressLine1", column = @Column(name = "house_number")),
+            @AttributeOverride(name = "addressLine2", column = @Column(name = "street"))
+    })
+    private Set<Address> addresses = new HashSet<>();
+
     public Type1Entity() {
         super();
     }
 
-    public Type1Entity(String dbId, int entityId, String entityName, String entityType) {
+    public Type1Entity(String dbId, int entityId, String entityName, String entityType, Set<String> phoneNumbers, Set<Address> addresses) {
         super();
         this.dbId = dbId;
         this.entityId = entityId;
         this.entityName = entityName;
         this.entityType = entityType;
+        this.phoneNumbers = phoneNumbers;
+        this.addresses = addresses;
     }
 
     public int getEntityId() {
@@ -49,43 +66,38 @@ public class Type1Entity extends BaseEntity {
         this.entityType = entityType;
     }
 
+    public Set<String> getPhoneNumbers() {
+        return phoneNumbers;
+    }
+
+    public void setPhoneNumbers(Set<String> phoneNumbers) {
+        this.phoneNumbers = phoneNumbers;
+    }
+
+    public Set<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(Set<Address> addresses) {
+        this.addresses = addresses;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Type1Entity that = (Type1Entity) o;
+        return entityId == that.entityId &&
+                Objects.equals(entityName, that.entityName) &&
+                Objects.equals(entityType, that.entityType) &&
+                Objects.equals(phoneNumbers, that.phoneNumbers) &&
+                Objects.equals(addresses, that.addresses);
+    }
+
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + entityId;
-        result = prime * result + ((entityName == null) ? 0 : entityName.hashCode());
-        result = prime * result + ((entityType == null) ? 0 : entityType.hashCode());
-        return result;
-    }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Type1Entity other = (Type1Entity) obj;
-        if (entityId != other.entityId)
-            return false;
-        if (entityName == null) {
-            if (other.entityName != null)
-                return false;
-        } else if (!entityName.equals(other.entityName))
-            return false;
-        if (entityType == null) {
-            if (other.entityType != null)
-                return false;
-        } else if (!entityType.equals(other.entityType))
-            return false;
-        return true;
+        return Objects.hash(super.hashCode(), entityId, entityName, entityType, phoneNumbers, addresses);
     }
-
-    @Override
-    public String toString() {
-        return "Type1Entity [entityId=" + entityId + ", entityName=" + entityName + ", entityType=" + entityType + "]";
-    }
-
 }

@@ -23,4 +23,8 @@ public class EntityOrchestrator {
     public List<Type1Entity> getAll() {
         return type1Dao.getAll();
     }
+
+    public void delete(String dbId) {
+        type1Dao.delete(dbId);
+    }
 }

@@ -5,10 +5,7 @@ import com.exp.persistence.entities.Type1Entity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,6 +33,12 @@ public class EntityController {
     @RequestMapping(value = "/entities", method = RequestMethod.GET)
     public ResponseEntity<Object> getEntity() {
         return new ResponseEntity<>(entityOrchestrator.getAll(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/entity/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Object> deleteEntity(@PathVariable("id") String dbId) {
+        entityOrchestrator.delete(dbId);
+        return new ResponseEntity<>("TestObj is deleted successfully", HttpStatus.CREATED);
     }
 }
 
