@@ -2,9 +2,12 @@ package com.exp.controllers;
 
 import com.exp.common.AuthZAccess;
 import com.exp.common.LogAccess;
+import com.exp.common.SecureByTest;
+import com.exp.common.SecureByTestResolver;
 import com.exp.exceptions.TestException;
 import com.exp.service.UserService;
 import com.exp.service.dtos.User;
+import com.exp.persistence.TestPersistenceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,9 @@ public class UserController {
 
     @Autowired
     RestTemplate restTemplate;
+
+    @Autowired
+    TestPersistenceException testPersistenceException;
 
     @Value("${spring.application.name}")
     //@Value("Hello World")
@@ -76,6 +82,20 @@ public class UserController {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         HttpEntity<String> entity = new HttpEntity<String>(headers);
         return restTemplate.exchange("http://localhost:9090/users", HttpMethod.GET, entity, String.class).getBody();
+    }
+
+    @SecureByTest(resolver = SecureByTestResolver.class, name="id")
+    @RequestMapping(value = "/resolve/{id}", method = RequestMethod.GET)
+    public String getAOPResouceREsolver(@PathVariable("id") String id) {
+
+
+        //testPersistenceException.testThrowException();
+        return "Authorized";
+    }
+
+    @RequestMapping(value = "/apo/exp", method = RequestMethod.GET)
+    public void getAOPExceptionChecker() {
+        testPersistenceException.testThrowException();
     }
 
 //    @GetMapping(value = "/test1")
